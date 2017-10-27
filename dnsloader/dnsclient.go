@@ -2,12 +2,10 @@ package dnsloader
 
 import (
 	// "bytes"
-	"github.com/zhangmingkai4315/dns-loader/core"
 	"github.com/zhangmingkai4315/go-dns-shooter/dns"
 	"log"
 	"net"
 	"strconv"
-	"time"
 )
 
 // DNSClient 定义dnsloader发包的配置数据
@@ -16,7 +14,7 @@ type DNSClient struct {
 	Port   int
 	packet *dns.DNSPacket
 	Config *Config
-	conn   net.Conn
+	Conn   net.Conn
 }
 
 // NewDefaultConfig func return the default configration object
@@ -29,13 +27,14 @@ func NewDefaultConfig() (config *Config) {
 		// 是否固定域名
 		DomainFixed: false,
 		// 固定部分的域名
-		Domain: "example",
+		Domain: "test1",
 		// 随机域名长度
-		DomainRandomLength: 10,
+		DomainRandomLength: 1,
 		// 是否查询类型固定
 		QueryTypeFixed: true,
 		// 固定的查询类型
 		QueryType: "A",
+		// 解析请求的数量
 	}
 }
 
@@ -63,7 +62,7 @@ func NewDNSClientWithConfig(addr string, port int, config *Config) (dnsclient *D
 	if err != nil {
 		return nil, err
 	}
-	dnsclient.conn = conn
+	dnsclient.Conn = conn
 	log.Println("New DNS client success, start send packet...")
 	dnsclient.InitPacket()
 	return dnsclient, nil
@@ -72,6 +71,7 @@ func NewDNSClientWithConfig(addr string, port int, config *Config) (dnsclient *D
 // InitPacket init a packet for dns query data
 func (client *DNSClient) InitPacket() {
 	client.packet = new(dns.DNSPacket)
+	// client.packet.InitialPacket(domain, randomlen, dns.TypeA)
 	if client.Config.QueryTypeFixed == true {
 		client.packet.InitialPacket(client.Config.Domain,
 			client.Config.DomainRandomLength,
@@ -86,72 +86,19 @@ func (client *DNSClient) InitPacket() {
 }
 
 // BuildReq build new dns request for use later
-func (client *DNSClient) BuildReq() core.RawRequest {
-	id := time.Now().UnixNano()
+func (client *DNSClient) BuildReq() []byte {
 	randomDomain := dns.GenRandomDomain(client.Config.DomainRandomLength, client.Config.Domain)
 	if _, err := client.packet.UpdateSubDomainToBytes(randomDomain); err != nil {
 		log.Printf("%v\n", err)
 	}
-	rawReq := core.RawRequest{
-		ID:  id,
-		Req: client.packet.RawByte,
-	}
-	return rawReq
+	return client.packet.RawByte
 }
 
 // Call func will be called by schedual each time
-func (client *DNSClient) Call(req []byte, timeout time.Duration) ([]byte, error) {
-	_, err := client.conn.Write(req)
+func (client *DNSClient) Call(req []byte) {
+	_, err := client.Conn.Write(req)
 	if err != nil {
 		log.Printf("Send DNS Query Failed:%s", err)
-		return nil, err
+		return
 	}
-	readBytes := make([]byte, 512)
-	// var buffer bytes.Buffer
-	// _, err = client.conn[randomConn].Read(readBytes)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// readByte := readBytes[0]
-	// buffer.WriteByte(readByte)
-	// return buffer.Bytes(), nil
-	return readBytes, nil
-}
-
-// CheckResp func
-func (client *DNSClient) CheckResp(rawReq core.RawRequest, rawResponse core.RawResponse) *core.CallResult {
-	var result core.CallResult
-	result.ID = rawResponse.ID
-	result.Req = rawReq
-	result.Resp = rawResponse
-	// var sreq ServerReq
-	// err := json.Unmarshal(rawReq.Req, &sreq)
-	// if err != nil {
-	// 	result.Code = core.RET_FORMERR
-	// 	return &result
-	// }
-
-	// var sresp ServerResp
-	// err = json.Unmarshal(rawResponse.Resp, &sresp)
-	// if err != nil {
-	// 	result.Code = core.RET_RESULT_ERROR
-	// 	result.Msg =
-	// 		fmt.Sprintf("Incorrectly formatted Resp: %s!\n", string(rawResponse.Resp))
-	// 	return &result
-	// }
-	// if sresp.ID != sreq.ID {
-	// 	result.Code = core.RET_CODE_ID_ERROR
-	// 	result.Msg =
-	// 		fmt.Sprintf("Inconsistent raw id! (%d != %d)\n", rawReq.ID, rawResponse.ID)
-	// 	return &result
-	// }
-	// if sresp.Err != nil {
-	// 	result.Code = core.RET_SERVER_ERROR
-	// 	result.Msg =
-	// 		fmt.Sprintf("Abnormal server: %s!\n", sresp.Err)
-	// 	return &result
-	// }
-	result.Code = core.RET_NO_ERROR
-	return &result
-
 }

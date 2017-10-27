@@ -1,5 +1,33 @@
 package dnsloader
 
+// ReturnCode for return code of each call function
+type ReturnCode int
+
+//dns loader running status
+const (
+	STATUS_ORIGINAL uint32 = 0
+	STATUS_STARTING uint32 = 0
+	STATUS_STARTED  uint32 = 0
+	STATUS_STOPPING uint32 = 0
+	STATUS_STOPPED  uint32 = 0
+)
+const (
+	CALL_NOT_FINISH   uint32 = 0
+	CALL_SUCCESS_DONE uint32 = 1
+	CALL_TIMEOUT      uint32 = 2
+)
+
+// Return Code
+const (
+	RetNoError   ReturnCode = 0
+	RetServfail             = 0x2
+	RetFormError            = 0x1
+	RetNxDomain             = 0x3
+	RetNoImp                = 0x4
+	RetRefused              = 0x5
+	RetTimeout              = 0xf0
+)
+
 const (
 	// valid dnsRR_Header.Rrtype and dnsQuestion.qtype
 	dnsTypeA     = 1
@@ -84,14 +112,22 @@ var DNSRcode = map[string]int{
 	"NameError":      3,
 	"NotImplemented": 4,
 	"Refused":        5,
+	"YXDOMAIN":       6,
+	"XRRSET":         7,
+	"NotAuth":        8,
+	"NotInZone":      9,
 }
 
 // DNSRcodeReverse define the real code to string map
-var DNSRcodeReverse = map[int]string{
+var DNSRcodeReverse = map[uint8]string{
 	0: "Success",
 	1: "FormatError",
-	2: "ServerFailure",
-	3: "NameError",
+	2: "ServerFail",
+	3: "NXDOMAIN",
 	4: "NotImplemented",
 	5: "Refused",
+	6: "YXDOMAIN",
+	7: "XRRSET",
+	8: "NotAuth",
+	9: "NotInZone",
 }
