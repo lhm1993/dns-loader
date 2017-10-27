@@ -25,18 +25,18 @@ type myDNSLoaderGenerator struct {
 }
 
 func (mlg *myDNSLoaderGenerator) init() {
-	log.Println("Initial common loader...")
+	log.Println("initial common loader...")
 	var total = int64(mlg.timeout)/int64(1e9/mlg.qps) + 1
 	if total > math.MaxInt32 {
 		total = math.MaxInt32
 	}
 	mlg.result = make(map[uint8]uint64)
 	mlg.concurrency = uint32(total)
-	log.Printf("Initial Process Done QPS[%d]/concurrency[%d]", mlg.qps, mlg.concurrency)
+	log.Printf("initial Process Done QPS[%d]/concurrency[%d]", mlg.qps, mlg.concurrency)
 }
 
 func (mlg *myDNSLoaderGenerator) Start() bool {
-	log.Println("Starting Loader...")
+	log.Println("starting Loader...")
 	mlg.ctx, mlg.cancelFunc = context.WithTimeout(context.Background(), mlg.duration)
 	mlg.callCount = 0
 	currentStatus := mlg.Status()
@@ -46,13 +46,13 @@ func (mlg *myDNSLoaderGenerator) Start() bool {
 	atomic.StoreUint32(&mlg.status, STATUS_STARTING)
 	if mlg.qps > 0 {
 		interval := time.Duration(1e9 / mlg.qps)
-		log.Printf("Setting Throttle %v", interval)
+		log.Printf("setting throttle %v", interval)
 	}
 	atomic.StoreUint32(&mlg.status, STATUS_STARTED)
 
-	log.Println("Create new goroutine to Generating Load")
+	log.Println("new goroutine to generating dns packets")
 	s := spinner.New(spinner.CharSets[36], 100*time.Millisecond)
-	log.Println("Create new goroutine to receive dns data from server")
+	log.Println("new goroutine to receive dns data from server")
 	go func() {
 		// recive data from connections
 		b := make([]byte, 4)
@@ -68,26 +68,26 @@ func (mlg *myDNSLoaderGenerator) Start() bool {
 
 	limiter := ratelimit.New(int(mlg.qps))
 	mlg.generatorLoad(limiter, s)
-	log.Println("Waiting for program shutdown....")
+	log.Println("waiting for program shutdown....")
 	time.Sleep(5)
-	log.Printf("[Result]Total packets sum:%d", mlg.CallCount())
-	log.Printf("[Result]Runing time %v", mlg.duration)
+	log.Printf("[Result]total packets sum:%d", mlg.CallCount())
+	log.Printf("[Result]runing time %v", mlg.duration)
 	var counter uint64
 	for k, v := range mlg.result {
 		counter = v + counter
-		log.Printf("[Result]Status %s:%d [%.2f%%]", DNSRcodeReverse[k], v, float64(v*100)/float64(mlg.CallCount()))
+		log.Printf("[Result]status %s:%d [%.2f%%]", DNSRcodeReverse[k], v, float64(v*100)/float64(mlg.CallCount()))
 	}
 	restUnknown := mlg.CallCount() - counter
-	log.Printf("[Result]Status Unknown:%d [%.2f%%]", restUnknown, float64(restUnknown*100)/float64(mlg.CallCount()))
+	log.Printf("[Result]status unknown:%d [%.2f%%]", restUnknown, float64(restUnknown*100)/float64(mlg.CallCount()))
 	return true
 }
 
 func (mlg *myDNSLoaderGenerator) prepareStop(err error) {
-	log.Printf("Prepare to Stop Load Test [%s]\n", err)
+	log.Printf("prepare to stop load test [%s]\n", err)
 	atomic.StoreUint32(&mlg.status, STATUS_STOPPING)
-	log.Println("Stop Channel...")
+	log.Println("try to stop channel...")
 	atomic.StoreUint32(&mlg.status, STATUS_STOPPED)
-	log.Println("Stop Load Test Done!")
+	log.Println("stop load test success!")
 }
 
 func (mlg *myDNSLoaderGenerator) sendNewRequest() {
@@ -153,7 +153,6 @@ func NewDNSLoaderGenerator(param GeneratorParam) (Generator, error) {
 		qps:      param.QPS,
 		duration: param.Duration,
 		status:   STATUS_ORIGINAL,
-		workers:  param.Workers,
 	}
 	mlg.init()
 	return mlg, nil

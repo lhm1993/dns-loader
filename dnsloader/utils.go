@@ -52,3 +52,8 @@ func GenRandomDomain(length int, domain string) string {
 	}
 	return string(b) + "." + domain
 }
+
+// LoadConfigFile func
+func LoadConfigFile(file string) error {
+	return nil
+}

@@ -49,7 +49,6 @@ type GeneratorParam struct {
 	Timeout  time.Duration
 	QPS      uint32
 	Duration time.Duration
-	Workers  int
 }
 
 //ValidCheck function
