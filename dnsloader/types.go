@@ -60,7 +60,7 @@ func (param *GeneratorParam) ValidCheck() error {
 	if param.Timeout == 0 {
 		errMsgs = append(errMsgs, "Invalid timeout!")
 	}
-	if param.QPS == 0 {
+	if param.QPS < 0 {
 		errMsgs = append(errMsgs, "Invalid qps(query per second)!")
 	}
 	if param.Duration == 0 {

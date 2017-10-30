@@ -31,7 +31,7 @@ func init() {
 	flag.StringVar(&master, "master", "", "the master host")
 	flag.IntVar(&duration, "duration", 60, "the duration time (s)")
 	flag.IntVar(&timeout, "timeout", 1, "the timeout for one query[not implement]")
-	flag.IntVar(&qps, "qps", 10, "dns query per second")
+	flag.IntVar(&qps, "qps", 10, "dns query per second(0=unlimit speed)")
 	flag.StringVar(&server, "server", "172.17.0.2", "dns server and listen port")
 	flag.IntVar(&port, "port", 53, "dns query server port")
 	flag.StringVar(&domain, "domain", "google.com", "base domain,for example :google.com")
