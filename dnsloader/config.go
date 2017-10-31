@@ -3,8 +3,9 @@ package dnsloader
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/ini.v1"
 	"strings"
+
+	"gopkg.in/ini.v1"
 )
 
 // Configuration define all config for this app
@@ -20,6 +21,8 @@ type Configuration struct {
 	QueryTypeFixed     bool   `json:"query_type_fixed"`
 	QueryType          string `json:"query_type"`
 	Debug              bool   `json:"debug"`
+	HTTPServer         string `json:"web"`
+	RPCPort            int    `json:"rpc_port"`
 }
 
 // LoadConfigurationFromIniFile func read a .ini file from file system
@@ -40,15 +43,23 @@ func (config *Configuration) LoadConfigurationFromIniFile(filename string) (err 
 	if err != nil {
 		return fmt.Errorf("Configuration file load section [Query] error:%s", err.Error())
 	}
+	// load app attribute
 	if secApp.HasKey("type") {
 		config.LoaderType = secApp.Key("type").String()
 	}
 	if secApp.HasKey("control_master") {
 		config.ControlMaster = secApp.Key("control_master").String()
 	}
+	if secApp.HasKey("rpc_port") {
+		config.RPCPort = secQuery.Key("rpc_port").MustInt()
+	}
+	if secApp.HasKey("http_server") {
+		config.HTTPServer = secApp.Key("http_server").String()
+	}
 	if secApp.HasKey("debug") {
 		config.Debug = secApp.Key("debug").MustBool()
 	}
+	// Load traffic attribute
 	if secQuery.HasKey("duration") {
 		config.Duration = secQuery.Key("duration").MustInt()
 	}
@@ -74,5 +85,6 @@ func (config *Configuration) LoadConfigurationFromIniFile(filename string) (err 
 	if secQuery.HasKey("query_type") {
 		config.QueryType = secQuery.Key("query_type").String()
 	}
+
 	return
 }

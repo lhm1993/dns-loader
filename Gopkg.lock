@@ -8,10 +8,28 @@
   version = "1.0"
 
 [[projects]]
+  name = "github.com/codegangsta/negroni"
+  packages = ["."]
+  revision = "fde5e16d32adc7ad637e9cd9ad21d4ebc6192535"
+  version = "v0.2.0"
+
+[[projects]]
   name = "github.com/fatih/color"
   packages = ["."]
   revision = "1b35f289c47d5c73c398cea8e006b7bcb6234a96"
   version = "v0.1"
+
+[[projects]]
+  name = "github.com/gorilla/context"
+  packages = ["."]
+  revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/gorilla/mux"
+  packages = ["."]
+  revision = "24fca303ac6da784b9e8269f724ddeb0b2eea5e7"
+  version = "v1.5.0"
 
 [[projects]]
   branch = "master"
@@ -31,9 +49,15 @@
   packages = [".","internal/clock"]
   revision = "d15fa2e2a63dd52104bc96d8ea7dc47ce8027de8"
 
+[[projects]]
+  name = "gopkg.in/ini.v1"
+  packages = ["."]
+  revision = "f280b3ba517bf5fc98922624f21fb0e7a92adaec"
+  version = "v1.30.3"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e85b9df9473988c335c8ac03dbb6dc77a8d312a72526b85c88998007671ebe1f"
+  inputs-digest = "0e85294d2560f0adcc0362854d900323c73edb4ff3587610e04f934b90400b51"
   solver-name = "gps-cdcl"
   solver-version = 1

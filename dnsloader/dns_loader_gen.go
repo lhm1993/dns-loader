@@ -2,11 +2,12 @@ package dnsloader
 
 import (
 	"context"
-	"github.com/briandowns/spinner"
-	"go.uber.org/ratelimit"
 	"log"
 	"sync/atomic"
 	"time"
+
+	"github.com/briandowns/spinner"
+	"go.uber.org/ratelimit"
 )
 
 type myDNSLoaderGenerator struct {
@@ -169,4 +170,30 @@ func NewDNSLoaderGenerator(param GeneratorParam) (Generator, error) {
 	}
 	mlg.init()
 	return mlg, nil
+}
+
+// GenTrafficFromConfig function will do traffic generate job
+// from configuration
+func GenTrafficFromConfig(config *Configuration) {
+	dnsclient, err := NewDNSClientWithConfig(config)
+	if err != nil {
+		log.Panicf("%s", err.Error())
+	}
+	log.Println("config the dns loader success")
+	log.Printf("current configuration for dns loader is server:%s|port:%d\n",
+		dnsclient.Config.Server, dnsclient.Config.Port)
+	// log.Printf("%+v", config)
+	param := GeneratorParam{
+		Caller:   dnsclient,
+		Timeout:  1000 * time.Millisecond,
+		QPS:      uint32(config.QPS),
+		Duration: time.Second * time.Duration(config.Duration),
+	}
+	log.Printf("initialize load %+v", param)
+	gen, err := NewDNSLoaderGenerator(param)
+	if err != nil {
+		log.Panicf("load generator initialization fail :%s", err)
+	}
+	log.Println("start load generator")
+	gen.Start()
 }
