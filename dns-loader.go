@@ -30,7 +30,7 @@ var (
 func init() {
 	flag.StringVar(&loaderType, "t", "once", "loader type[master|worker|once(default)]")
 	flag.StringVar(&configFile, "f", "", "config file")
-	flag.StringVar(&master, "master", "", "the master host")
+	flag.StringVar(&master, "master", "", "the master host ip and port 192.168.1.1:8000")
 	flag.IntVar(&duration, "duration", 60, "the duration time (s)")
 	flag.IntVar(&timeout, "timeout", 1, "the timeout for one query[not implement]")
 	flag.IntVar(&qps, "q", 10, "dns query per second(0=unlimit speed)")
@@ -83,8 +83,11 @@ func main() {
 		dnsloader.GenTrafficFromConfig(config)
 	} else if config.LoaderType == "master" {
 		// start web component
+		if configFile == "" {
+			log.Fatalln("Please using -f to load config file first")
+		}
 		log.Printf("Start Web for control panel default web address:%s\n", config.HTTPServer)
-		n := web.NewServer()
+		n := web.NewServer(config)
 		http.ListenAndServe(config.HTTPServer, n)
 	} else if config.LoaderType == "agent" {
 		// start rpc regist to server

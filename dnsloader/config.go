@@ -23,6 +23,9 @@ type Configuration struct {
 	Debug              bool   `json:"debug"`
 	HTTPServer         string `json:"web"`
 	RPCPort            int    `json:"rpc_port"`
+
+	User     string `json:"-"`
+	Password string `json:"-"`
 }
 
 // LoadConfigurationFromIniFile func read a .ini file from file system
@@ -47,6 +50,15 @@ func (config *Configuration) LoadConfigurationFromIniFile(filename string) (err 
 	if secApp.HasKey("type") {
 		config.LoaderType = secApp.Key("type").String()
 	}
+
+	// load app attribute
+	if secApp.HasKey("user") {
+		config.User = secApp.Key("user").String()
+	}
+	if secApp.HasKey("password") {
+		config.Password = secApp.Key("password").String()
+	}
+
 	if secApp.HasKey("control_master") {
 		config.ControlMaster = secApp.Key("control_master").String()
 	}
