@@ -87,11 +87,10 @@ func main() {
 			log.Fatalln("Please using -f to load config file first")
 		}
 		log.Printf("Start Web for control panel default web address:%s\n", config.HTTPServer)
-		n := web.NewServer(config)
-		http.ListenAndServe(config.HTTPServer, n)
+		web.NewServer(config)
 	} else if config.LoaderType == "agent" {
 		// start rpc regist to server
-
+		
 		// start rpc waiting status
 	}
 }

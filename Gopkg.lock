@@ -20,6 +20,12 @@
   version = "v0.1"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/goincremental/negroni-sessions"
+  packages = ["."]
+  revision = "0055e7581fb0fe0f6ee5f622199672425526e1b2"
+
+[[projects]]
   name = "github.com/gorilla/context"
   packages = ["."]
   revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
@@ -32,10 +38,34 @@
   version = "v1.5.0"
 
 [[projects]]
+  name = "github.com/gorilla/securecookie"
+  packages = ["."]
+  revision = "667fe4e3466a040b780561fe9b51a83a3753eefc"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/gorilla/sessions"
+  packages = ["."]
+  revision = "ca9ada44574153444b00d3fd9c8559e4cc95f896"
+  version = "v1.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/shiena/ansicolor"
   packages = ["."]
   revision = "a422bbe96644373c5753384a59d678f7d261ff10"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/unrolled/render"
+  packages = ["."]
+  revision = "65450fb6b2d3595beca39f969c411db8f8d5c806"
+
+[[projects]]
+  name = "github.com/urfave/negroni"
+  packages = ["."]
+  revision = "fde5e16d32adc7ad637e9cd9ad21d4ebc6192535"
+  version = "v0.2.0"
 
 [[projects]]
   branch = "master"
@@ -58,6 +88,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0e85294d2560f0adcc0362854d900323c73edb4ff3587610e04f934b90400b51"
+  inputs-digest = "f5471985dd66e9edd88d46f8853b607a73637de2908f832ebd88055fee75d81c"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="/public/css/style.css">
+    <title>DNS-Shooter</title>
+</head>
+
+<body>
+    <div class="container-fluid header">
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="">DNS-Shooter</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="navbar-collapse-2">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#">Usage</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/zhangmingkai4315/go-dns-shooter">Github</a>
+                        </li>
+                    </ul>
+
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container -->
+        </nav>
+        <!-- /.navbar -->
+    </div>
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-4 info-box">
+                <div class="info-title">
+                    <p>配置信息/Configuration</p>
+                </div>
+                <div class="info-body">
+                    <form name="config">
+                        <div class="item">
+                            <label>Server</label>
+                            <input type="text" name="server" value="">
+                        </div>
+                        <div class="item">
+                            <label>Port</label>
+                            <input type="number" name="port" value="">
+                        </div>
+                        <div class="item">
+                            <label>Duration</label>
+                            <input type="number" name="duration" value="">
+                        </div>
+                        <div class="item">
+                            <label>QPS</label>
+                            <input type="number" name="qps" value="">
+                        </div>
+
+                        <div class="item">
+                            <label>Domain</label>
+                            <input type="text" name="domain" value="">
+                        </div>
+                        <div class="item">
+                            <label>Length</label>
+                            <input type="number" name="domain_random_length" value="">
+                        </div>
+                        <div class="item">
+                            <label>Query Type</label>
+                            <input type="text" name="query_type" value="">
+                        </div>
+                        <div class="item">
+                            <label>Fixed Type</label>
+                            <div class="btn-group" role="group" aria-label="">
+                                <button type="button" data-value="true" class="btn  btn-fixed-select">Yes</button>
+                                <button type="button" data-value="false" class="btn  btn-fixed-select">No</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-submit">Start</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-8 info-box">
+                <div class="info-title">
+                    <p>节点列表/NodeList</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="/public/js/main.js"></script>
+</body>
+
+</html>

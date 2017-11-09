@@ -26,6 +26,7 @@ type Configuration struct {
 
 	User     string `json:"-"`
 	Password string `json:"-"`
+	AppSecrect string `json:"-"`
 }
 
 // LoadConfigurationFromIniFile func read a .ini file from file system
@@ -58,7 +59,9 @@ func (config *Configuration) LoadConfigurationFromIniFile(filename string) (err 
 	if secApp.HasKey("password") {
 		config.Password = secApp.Key("password").String()
 	}
-
+	if secApp.HasKey("app_secrect") {
+		config.AppSecrect = secApp.Key("app_secrect").String()
+	}
 	if secApp.HasKey("control_master") {
 		config.ControlMaster = secApp.Key("control_master").String()
 	}
