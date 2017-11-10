@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -13,6 +14,7 @@ import (
 
 var currentPath string
 var store *sessions.CookieStore
+var nodeManager *NodeManager
 
 // NewServer function
 
@@ -32,6 +34,24 @@ func auth(f func(w http.ResponseWriter, req *http.Request)) func(w http.Response
 func index(w http.ResponseWriter, req *http.Request) {
 	r := render.New(render.Options{})
 	r.HTML(w, http.StatusOK, "index", nil)
+}
+
+func addNode(w http.ResponseWriter, req *http.Request) {
+	r := render.New(render.Options{})
+	decoder := json.NewDecoder(req.Body)
+	var ipinfo IPWithPort
+	err := decoder.Decode(&ipinfo)
+	if err != nil {
+		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": "decode data fail"})
+		return
+	}
+
+	err = nodeManager.AddNode(ipinfo.IPAddress, ipinfo.Port)
+	if err != nil {
+		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": "add node fail"})
+		return
+	}
+	r.JSON(w, http.StatusOK, map[string]string{"status": "success"})
 }
 
 func startDNSTraffic(w http.ResponseWriter, req *http.Request) {
@@ -74,13 +94,16 @@ func login(config *dnsloader.Configuration) func(w http.ResponseWriter, req *htt
 // NewServer function create the http api
 func NewServer(config *dnsloader.Configuration) {
 	key := []byte(config.AppSecrect)
+	nodeManager = NewNodeManager(config)
 	store = sessions.NewCookieStore(key)
 	r := mux.NewRouter()
 	r.HandleFunc("/", auth(index)).Methods("GET")
 	r.HandleFunc("/login", login(config)).Methods("GET", "POST")
+	r.HandleFunc("/nodes", auth(addNode)).Methods("POST")
 	r.HandleFunc("/start", auth(startDNSTraffic)).Methods("POST")
 	log.Println("http server route init success")
 	log.Printf("static file folder:%s\n", http.Dir("/web/assets"))
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public", http.FileServer(http.Dir("./web/assets"))))
-	http.ListenAndServe(config.HTTPServer, r)
+
+	http.ListenAndServe(config.HTTPServer, http.TimeoutHandler(r, time.Second*10, "timeout"))
 }

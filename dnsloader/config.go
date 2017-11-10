@@ -24,8 +24,8 @@ type Configuration struct {
 	HTTPServer         string `json:"web"`
 	RPCPort            int    `json:"rpc_port"`
 
-	User     string `json:"-"`
-	Password string `json:"-"`
+	User       string `json:"-"`
+	Password   string `json:"-"`
 	AppSecrect string `json:"-"`
 }
 
@@ -66,7 +66,7 @@ func (config *Configuration) LoadConfigurationFromIniFile(filename string) (err 
 		config.ControlMaster = secApp.Key("control_master").String()
 	}
 	if secApp.HasKey("rpc_port") {
-		config.RPCPort = secQuery.Key("rpc_port").MustInt()
+		config.RPCPort = secApp.Key("rpc_port").MustInt()
 	}
 	if secApp.HasKey("http_server") {
 		config.HTTPServer = secApp.Key("http_server").String()
