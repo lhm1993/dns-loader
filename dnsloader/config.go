@@ -29,6 +29,11 @@ type Configuration struct {
 	AppSecrect string `json:"-"`
 }
 
+// Valid will check all setting
+func (config *Configuration) Valid() bool {
+	return false
+}
+
 // LoadConfigurationFromIniFile func read a .ini file from file system
 // and return the config object
 func (config *Configuration) LoadConfigurationFromIniFile(filename string) (err error) {

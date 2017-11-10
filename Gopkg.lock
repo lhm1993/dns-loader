@@ -39,6 +39,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/nu7hatch/gouuid"
+  packages = ["."]
+  revision = "179d4d0c4d8d407a32af483c2354df1d2c91e6c3"
+
+[[projects]]
+  branch = "master"
   name = "github.com/shiena/ansicolor"
   packages = ["."]
   revision = "a422bbe96644373c5753384a59d678f7d261ff10"
@@ -70,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "37a56effb3f96861ff22c6fde577b4dabba0bf2c8e9efd651402a3c06a470e85"
+  inputs-digest = "8da2ba8a4cc8917fd2e8284ea9a82fea282a4f17653ea52e33c82d99b6116a7e"
   solver-name = "gps-cdcl"
   solver-version = 1
