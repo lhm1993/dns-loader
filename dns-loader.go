@@ -52,16 +52,21 @@ func main() {
 	//if config file exist, load config file
 	var config *dnsloader.Configuration
 	config = &dnsloader.Configuration{}
-	if *configFile != "" {
-		log.Printf("load configuration from file:%s\n", *configFile)
-		err := config.LoadConfigurationFromIniFile(*configFile)
-		if err != nil {
-			log.Panicf("read configuration file error:%s", err.Error())
-		}
-	} else {
-		log.Println("load configuration from command line")
+	// enable performance debug for app
+	if *debug == true {
+		go func() {
+			log.Println("Start performace monitor on port 8080")
+			err := http.ListenAndServe("localhost:8080", http.DefaultServeMux)
+			if err != nil {
+				log.Println("Start performance monitor fail")
+			}
+		}()
+	}
+
+	// Start docker container first
+	config.LoaderType = *loaderType
+	if *loaderType == "once" {
 		config.ControlMaster = *master
-		config.LoaderType = *loaderType
 		config.Domain = *domain
 		config.DomainRandomLength = *randomlen
 		config.QPS = *qps
@@ -71,35 +76,31 @@ func main() {
 		config.Port = *port
 		config.QueryType = *queryType
 		config.Debug = *debug
-	}
-	if !config.Valid() {
-		usageAndExit("invalide params")
-	}
-	// enable performance debug for app
-	if config.Debug == true {
-		go func() {
-			log.Println("Start performace monitor on port 8080")
-			err := http.ListenAndServe("localhost:8080", http.DefaultServeMux)
-			if err != nil {
-				log.Println("Start performance monitor fail")
-			}
-		}()
-	}
-	// Start docker container first
-	if config.LoaderType == "once" {
-		dnsloader.GenTrafficFromConfig(config)
-	} else if config.LoaderType == "master" {
-		// start web component
-		if *configFile == "" {
-			log.Fatalln("Please using -f to load config file first")
+		if err := config.Valid(); err != nil {
+			usageAndExit(err.Error())
 		}
-		log.Printf("Start Web for control panel default web address:%s\n", config.HTTPServer)
-		web.NewServer(config)
-	} else if config.LoaderType == "agent" {
-		// start rpc regist to server
-
-		// start rpc waiting status
+		dnsloader.GenTrafficFromConfig(config)
+		return
 	}
+	if *loaderType == "master" {
+		if *configFile != "" {
+			log.Printf("load configuration from file:%s\n", *configFile)
+			err := config.LoadConfigurationFromIniFile(*configFile)
+			if err != nil {
+				log.Panicf("read configuration file error:%s", err.Error())
+			}
+		} else {
+			usageAndExit("please using -c to load config file first")
+		}
+		log.Printf("start Web for control panel default web address:%s\n", config.HTTPServer)
+		web.NewServer(config)
+		return
+	}
+
+	if *loaderType == "agent" {
+
+	}
+
 }
 
 func usageAndExit(msg string) {

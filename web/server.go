@@ -21,8 +21,8 @@ var nodeManager *NodeManager
 func auth(f func(w http.ResponseWriter, req *http.Request)) func(w http.ResponseWriter, req *http.Request) {
 
 	return func(w http.ResponseWriter, req *http.Request) {
-		session, _ := store.Get(req, "cookie-name")
-		if _, ok := session.Values["username"].(string); !ok {
+		session, _ := store.Get(req, "dns-loader")
+		if user, ok := session.Values["username"].(string); !ok || user == "" {
 			http.Redirect(w, req, "/login", 302)
 			return
 		}
@@ -45,7 +45,6 @@ func addNode(w http.ResponseWriter, req *http.Request) {
 		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": "decode data fail"})
 		return
 	}
-
 	err = nodeManager.AddNode(ipinfo.IPAddress, ipinfo.Port)
 	if err != nil {
 		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": "add node fail"})
@@ -63,15 +62,21 @@ func startDNSTraffic(w http.ResponseWriter, req *http.Request) {
 		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": "decode config fail"})
 	} else {
 		// localTraffic
+		err := config.Valid()
+		if err != nil {
+			log.Println(err)
+			r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": "validate config fail"})
+			return
+		}
 		go dnsloader.GenTrafficFromConfig(&config)
 		r.JSON(w, http.StatusOK, map[string]string{"status": "success"})
 	}
 }
 func login(config *dnsloader.Configuration) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		session, _ := store.Get(req, "cookie-name")
+		session, _ := store.Get(req, "dns-loader")
 		if user, ok := session.Values["username"].(string); ok && user != "" {
-			http.Redirect(w, req, "/index", 302)
+			http.Redirect(w, req, "/", 302)
 			return
 		}
 		if req.Method == "POST" {
@@ -80,7 +85,7 @@ func login(config *dnsloader.Configuration) func(w http.ResponseWriter, req *htt
 			if user == config.User && password == config.Password {
 				session.Values["username"] = user
 				session.Save(req, w)
-				http.Redirect(w, req, "/index", 302)
+				http.Redirect(w, req, "/", 302)
 			} else {
 				http.Redirect(w, req, "/login", 401)
 			}
@@ -88,6 +93,15 @@ func login(config *dnsloader.Configuration) func(w http.ResponseWriter, req *htt
 			r := render.New(render.Options{})
 			r.HTML(w, http.StatusOK, "login", nil)
 		}
+	}
+}
+func logout(w http.ResponseWriter, req *http.Request) {
+	session, _ := store.Get(req, "dns-loader")
+	if user, ok := session.Values["username"].(string); ok && user != "" {
+		session.Values["username"] = ""
+		session.Save(req, w)
+		http.Redirect(w, req, "/login", 302)
+		return
 	}
 }
 
@@ -98,6 +112,7 @@ func NewServer(config *dnsloader.Configuration) {
 	store = sessions.NewCookieStore(key)
 	r := mux.NewRouter()
 	r.HandleFunc("/", auth(index)).Methods("GET")
+	r.HandleFunc("/logout", logout).Methods("POST", "GET")
 	r.HandleFunc("/login", login(config)).Methods("GET", "POST")
 	r.HandleFunc("/nodes", auth(addNode)).Methods("POST")
 	r.HandleFunc("/start", auth(startDNSTraffic)).Methods("POST")

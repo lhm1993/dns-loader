@@ -5,33 +5,56 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/nu7hatch/gouuid"
+
+	"github.com/asaskevich/govalidator"
 	"gopkg.in/ini.v1"
 )
 
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
+}
+
 // Configuration define all config for this app
 type Configuration struct {
-	LoaderType         string `json:"loader_type"`
-	ControlMaster      string `json:"control_master"`
-	Duration           int    `json:"duration"`
-	QPS                int    `json:"qps"`
-	Server             string `json:"server"`
-	Port               int    `json:"port"`
-	Domain             string `json:"domain"`
-	DomainRandomLength int    `json:"domain_random_length"`
-	QueryTypeFixed     bool   `json:"query_type_fixed"`
-	QueryType          string `json:"query_type"`
-	Debug              bool   `json:"debug"`
-	HTTPServer         string `json:"web"`
-	RPCPort            int    `json:"rpc_port"`
+	ID                 string `json:"id" valid:"uuid"`
+	LoaderType         string `json:"loader_type" valid:"in(once|master|agent),optional"`
+	ControlMaster      string `json:"control_master" valid:"ip,optional"`
+	Duration           int    `json:"duration" valid:"-"`
+	QPS                int    `json:"qps" valid:"-"`
+	Server             string `json:"server" valid:"ip"`
+	Port               int    `json:"port" valid:"-"`
+	Domain             string `json:"domain" valid:"dns"`
+	DomainRandomLength int    `json:"domain_random_length" valid:"-"`
+	QueryTypeFixed     bool   `json:"query_type_fixed" valid:"-"`
+	QueryType          string `json:"query_type" valid:"in(A|AAAA|SOA|TXT|MX|NS|CNAME),optional"`
+	Debug              bool   `json:"debug" valid:"-"`
+	HTTPServer         string `json:"web" valid:"ip,optional"`
+	RPCPort            int    `json:"rpc_port" valid:"-"`
 
-	User       string `json:"-"`
-	Password   string `json:"-"`
-	AppSecrect string `json:"-"`
+	User       string `json:"-" valid:"-"`
+	Password   string `json:"-" valid:"-"`
+	AppSecrect string `json:"-" valid:"-"`
 }
 
 // Valid will check all setting
-func (config *Configuration) Valid() bool {
-	return false
+func (config *Configuration) Valid() error {
+	if config.ID == "" {
+		id, _ := uuid.NewV4()
+		config.ID = (*id).String()
+	}
+	_, err := govalidator.ValidateStruct(config)
+	if err != nil {
+		return err
+	}
+	if config.QPS < 0 ||
+		config.Duration < 0 ||
+		config.DomainRandomLength < 0 ||
+		config.RPCPort < 0 ||
+		config.Port < 0 {
+		return errors.New("number can't set to nagetive")
+	}
+	return nil
 }
 
 // LoadConfigurationFromIniFile func read a .ini file from file system

@@ -35,7 +35,6 @@ type NodeManager struct {
 	mutex      *sync.RWMutex
 	IPList     []string
 	IPStatus   map[string][]NodeStatus
-	TaskID     uuid.UUID
 	TaskStatus []string
 	config     *dnsloader.Configuration
 }
