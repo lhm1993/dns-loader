@@ -4,8 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	_ "net/http/pprof"
+	"net/rpc"
+	"net/rpc/jsonrpc"
 	"os"
 
 	"github.com/zhangmingkai4315/dns-loader/dnsloader"
@@ -13,7 +16,7 @@ import (
 )
 
 var (
-	loaderType = flag.String("t", "once", "")
+	loaderType = flag.String("t", "", "")
 	timeout    = flag.Int("timeout", 5, "")
 	master     = flag.String("master", "", "")
 	duration   = flag.Int("duration", 60, "")
@@ -30,8 +33,8 @@ var (
 )
 var usage = `Usage: dns-loader [options...] 
 Options:
-  -t  loader type, one of "master","worker","once". Default is once.
-  -m  master control server. Must set this value when type is worker
+  -t  loader type, one of "master","worker","once", also can set it in you config file
+  -m  master control server ip. Must set this value when type is worker
   -s  dns server. Default "127.0.0.1"
   -p  dns server listen port. Default is 53.
   -d  query domain name
@@ -82,23 +85,39 @@ func main() {
 		dnsloader.GenTrafficFromConfig(config)
 		return
 	}
-	if *loaderType == "master" {
-		if *configFile != "" {
-			log.Printf("load configuration from file:%s\n", *configFile)
-			err := config.LoadConfigurationFromIniFile(*configFile)
-			if err != nil {
-				log.Panicf("read configuration file error:%s", err.Error())
-			}
-		} else {
-			usageAndExit("please using -c to load config file first")
+	if *configFile != "" {
+		log.Printf("load configuration from file:%s\n", *configFile)
+		err := config.LoadConfigurationFromIniFile(*configFile)
+		if err != nil {
+			log.Panicf("read configuration file error:%s", err.Error())
 		}
+	} else {
+		usageAndExit("please using -c to load config file first")
+	}
+	if *loaderType == "master" {
 		log.Printf("start Web for control panel default web address:%s\n", config.HTTPServer)
 		web.NewServer(config)
 		return
 	}
 
 	if *loaderType == "agent" {
-
+		if config.RPCPort == 0 || config.ControlMaster == "" {
+			usageAndExit("RPC port and master ip must given")
+		}
+		log.Printf("start RPC server listen on %d for master:%s connect\n", config.RPCPort, config.ControlMaster)
+		rpcService := web.NewRPCService()
+		rpc.Register(rpcService)
+		tcpAddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf(":%d", config.RPCPort))
+		checkError(err)
+		listener, err := net.ListenTCP("tcp", tcpAddr)
+		checkError(err)
+		for {
+			conn, err := listener.Accept()
+			if err != nil {
+				continue
+			}
+			jsonrpc.ServeConn(conn)
+		}
 	}
 
 }
@@ -111,4 +130,11 @@ func usageAndExit(msg string) {
 	flag.Usage()
 	fmt.Fprintf(os.Stderr, "\n")
 	os.Exit(1)
+}
+
+func checkError(err error) {
+	if err != nil {
+		fmt.Println("Fatal error ", err.Error())
+		os.Exit(1)
+	}
 }

@@ -11,8 +11,10 @@ import (
 type Event uint8
 
 const (
+	// Ready usually for listening status
+	Ready Event = iota
 	// Start and send the new config
-	Start Event = iota
+	Start
 	// Check the status
 	Check
 	// Running status with some message

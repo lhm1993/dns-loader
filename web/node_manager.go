@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/rpc"
+	"net/rpc/jsonrpc"
 	"sync"
 	"time"
 
@@ -218,26 +219,26 @@ func (manager *NodeManager) callKill(ip string, event Event, data interface{}) (
 
 // callCheckStatus function will check all the node with uuid
 func (manager *NodeManager) callPing(ip string, event Event) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("panic from rpc call[%s]\n", ip)
-		}
-	}()
-	client, err := rpc.DialHTTP("tcp", ip)
-
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		log.Printf("panic from rpc call[%s]\n", r)
+	// 	}
+	// }()
+	client, err := jsonrpc.Dial("tcp", ip)
 	defer client.Close()
 	if err != nil {
 		log.Printf("call remote node rpc fail:[%s] %s\n", ip, err.Error())
 		return
 	}
-	var result *RPCResult
-	args := &RPCCall{
+	var result int
+	args := RPCCall{
 		Event: event,
 	}
-	err = client.Call("Manager.Ping", args, &result)
+	err = client.Call("RPCService.Ping", args, &result)
 	if err != nil {
 		log.Printf("send ping check node fail:[%s] %s", ip, err.Error())
 		return
 	}
+	log.Printf("send ping check success:[%s] %s", ip, err.Error())
 	return nil
 }
