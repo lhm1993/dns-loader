@@ -16,8 +16,7 @@ var (
 	loaderType = flag.String("t", "", "")
 	timeout    = flag.Int("timeout", 5, "")
 	master     = flag.String("master", "", "")
-	duration   = flag.Int("duration", 60, "")
-	max        = flag.Int("max", 0, "")
+	duration   = flag.Int("D", 60, "")
 	qps        = flag.Int("q", 10, "")
 	domain     = flag.String("d", "", "")
 	server     = flag.String("s", "", "")
@@ -28,20 +27,21 @@ var (
 	queryType  = flag.String("Q", "A", "")
 	debug      = flag.Bool("debug", false, "")
 )
-var usage = `Usage: dns-loader [options...] 
+var usage = `
+Usage: dns-loader [options...] 
 Options:
-  -t  loader type, one of "master","worker","once", also can set it in you config file
-  -m  master control server ip. Must set this value when type is worker
-  -s  dns server. Default "127.0.0.1"
-  -p  dns server listen port. Default is 53.
-  -d  query domain name
-  -D  duration time. Default 60 seconds
-  -q  query per second. Default is 10
-  -r  random subdomain length. Default is 5
-  -R  enable random query type. Default is false
-  -c  config file path for app start
-  -Q  query type. Default is A
-  -debug enable debug mode
+  -t       loader type, one of "master","worker","once"
+  -c       config file path for app start
+  -s       dns server
+  -p       dns server listen port. Default is 53.
+  -d       query domain name
+  -D       duration time. Default 60 seconds
+  -q       query per second. Default is 10
+  -r       random subdomain length. Default is 5
+  -R       enable random query type. Default is false
+  -Q       query type. Default is A
+  -debug   enable debug mode
+
 `
 
 func main() {
@@ -65,8 +65,12 @@ func main() {
 
 	// Start docker container first
 	config.LoaderType = *loaderType
-	if *loaderType == "once" {
-		config.ControlMaster = *master
+	// if config file not given, try load all the parameters from command line
+	if *configFile == "" {
+		// loaderType only allow to be once
+		if *loaderType == "master" || *loaderType == "agent" {
+			usageAndExit("please using -c to load config file first")
+		}
 		config.Domain = *domain
 		config.DomainRandomLength = *randomlen
 		config.QPS = *qps
@@ -82,21 +86,16 @@ func main() {
 		dnsloader.GenTrafficFromConfig(config)
 		return
 	}
-	if *configFile != "" {
-		log.Printf("load configuration from file:%s\n", *configFile)
-		err := config.LoadConfigurationFromIniFile(*configFile)
-		if err != nil {
-			log.Panicf("read configuration file error:%s", err.Error())
-		}
-	} else {
-		usageAndExit("please using -c to load config file first")
+	log.Printf("load configuration from file:%s\n", *configFile)
+	err := config.LoadConfigurationFromIniFile(*configFile)
+	if err != nil {
+		log.Panicf("read configuration file error:%s", err.Error())
 	}
 	if *loaderType == "master" {
 		log.Printf("start Web for control panel default web address:%s\n", config.HTTPServer)
 		web.NewServer(config)
 		return
 	}
-
 	if *loaderType == "agent" {
 		if config.AgentPort == 0 || config.ControlMaster == "" {
 			usageAndExit("agent port and master ip must given")
@@ -105,7 +104,6 @@ func main() {
 		web.NewAgentServer(config)
 		return
 	}
-
 }
 
 func usageAndExit(msg string) {

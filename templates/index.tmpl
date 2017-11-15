@@ -1,92 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://cdn.bootcss.com/toastr.js/latest/css/toastr.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="/public/css/style.css">
-    <title>DNS-Shooter</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link href="https://cdn.bootcss.com/toastr.js/latest/css/toastr.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+            crossorigin="anonymous">
+        <link rel="stylesheet" href="/public/css/style.css">
+        <title>DNS-Loader</title>
+    </head>
 
-<body>
-    <div class="container-fluid header">
-        <nav class="navbar navbar-default">
-            <div class="container">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="">DNS-Shooter</a>
-                </div>
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="navbar-collapse-2">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#">Usage</a>
-                        </li>
-                        <li>
-                            <a href="https://github.com/zhangmingkai4315/go-dns-shooter">Github</a>
-                        </li>
-                    </ul>
+    <body>
+        <div class="container-fluid header">
+            <nav class="navbar navbar-default">
+                <div class="container">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="/">
+                            <img style="height:30px" src="/public/logo.png" />
+                        </a>
+                    </div>
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="navbar-collapse-2">
+                        <ul class="nav navbar-nav navbar-right">
+                            <!-- <li>
+                                <a href="#">Usage</a>
+                            </li> -->
+                            <li>
+                                <a href="https://github.com/zhangmingkai4315/dns-loader">
+                                    <i class="fa fa-github" aria-hidden="true"></i> Github</a>
+                            </li>
+                            <li>
 
-                </div>
-                <!-- /.navbar-collapse -->
-            </div>
-            <!-- /.container -->
-        </nav>
-        <!-- /.navbar -->
-    </div>
-    <div class="container main">
-        <div class="row">
-            <div class="col-md-4 info-box">
-                <div class="info-title">
-                    <p>配置信息/Configuration</p>
-                </div>
-                <div class="info-body">
-                    <form name="config">
-                        <div class="item">
-                            <label class="theme-label">Server</label>
-                            <input class="theme-input" type="text" placeholder="required" required name="server" value="">
-                        </div>
-                        <div class="item">
-                            <label class="theme-label">Port</label>
-                            <input class="theme-input" placeholder="default:53" type="number" name="port" value="">
-                        </div>
-                        <div class="item">
-                            <label class="theme-label">Duration</label>
-                            <input class="theme-input" placeholder="default:60 seconds" type="number" name="duration" value="">
-                        </div>
-                        <div class="item">
-                            <label class="theme-label">QPS</label>
-                            <input class="theme-input" placeholder="default:100qps" type="number" name="qps" value="">
-                        </div>
+                                <a href="/logout">
+                                    <i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
+                            </li>
+                        </ul>
 
-                        <div class="item">
-                            <label class="theme-label">Domain</label>
-                            <input class="theme-input" type="text" name="domain" placeholder="required" value="" required>
-                        </div>
-                        <div class="item">
-                            <label class="theme-label">Length</label>
-                            <input class="theme-input" type="number" name="domain_random_length" placeholder="default:5" value="">
-                        </div>
-                        <div class="item">
-                            <label class="theme-label">Query Type</label>
-                            <input class="theme-input" type="text" name="query_type" placeholder="default:A" value="">
-                        </div>
-                        <div class="item">
-                            <label class="theme-label">Fixed Type</label>
-                            <div class="btn-group" role="group" aria-label="">
-                                <button type="button" data-value="true" class="btn  btn-fixed-select">Yes</button>
-                                <button type="button" data-value="false" class="btn  btn-fixed-select">No</button>
+                    </div>
+                    <!-- /.navbar-collapse -->
+                </div>
+                <!-- /.container -->
+            </nav>
+            <!-- /.navbar -->
+        </div>
+        <div class="container main">
+            <div class="row">
+                <div class="col-md-4 info-box">
+                    <div class="info-title">
+                        <p>配置信息/Configuration</p>
+                    </div>
+                    <div class="info-body">
+                        <form name="config">
+                            <div class="item">
+                                <label class="theme-label">Server</label>
+                                <input class="theme-input" type="text" placeholder="required" required name="server" value="">
                             </div>
-                        </div>
-                        <button type="button" class="btn btn-submit config-submit">Start</button>
-                        <button type="button" class="btn btn-submit config-kill">Stop</button>
-                    </form>
-                </div>
-                <!-- <div class="info-status">
+                            <div class="item">
+                                <label class="theme-label">Port</label>
+                                <input class="theme-input" placeholder="default:53" type="number" name="port" value="">
+                            </div>
+                            <div class="item">
+                                <label class="theme-label">Duration</label>
+                                <input class="theme-input" placeholder="default:60 seconds" type="number" name="duration" value="">
+                            </div>
+                            <div class="item">
+                                <label class="theme-label">QPS</label>
+                                <input class="theme-input" placeholder="default:100qps" type="number" name="qps" value="">
+                            </div>
+
+                            <div class="item">
+                                <label class="theme-label">Domain</label>
+                                <input class="theme-input" type="text" name="domain" placeholder="required" value="" required>
+                            </div>
+                            <div class="item">
+                                <label class="theme-label">Length</label>
+                                <input class="theme-input" type="number" name="domain_random_length" placeholder="default:5" value="">
+                            </div>
+                            <div class="item">
+                                <label class="theme-label">Query Type</label>
+                                <input class="theme-input" type="text" name="query_type" placeholder="default:A" value="">
+                            </div>
+                            <div class="item">
+                                <label class="theme-label">Fixed Type</label>
+                                <div class="btn-group" role="group" aria-label="">
+                                    <button type="button" data-value="true" class="btn  btn-fixed-select">Yes</button>
+                                    <button type="button" data-value="false" class="btn  btn-fixed-select">No</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-submit config-submit">Start</button>
+                            <button type="button" class="btn btn-submit config-kill">Stop</button>
+                        </form>
+                    </div>
+                    <!-- <div class="info-status">
                     <div class="loader">
                         <span class="loader-block"></span>
                         <span class="loader-block"></span>
@@ -99,74 +108,82 @@
                         <span class="loader-block"></span>
                     </div>
                 </div> -->
-            </div>
-            <div class="col-md-8 info-box">
-                <div class="info-title">
-                    <div class="modal fade" tabindex="-1" id="myAddAgentModal" role="dialog">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content theme-modal">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title">Add a new agent</h4>
+                </div>
+                <div class="col-md-8 info-box">
+                    <div class="info-title">
+                        <div class="modal fade" tabindex="-1" id="myAddAgentModal" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content theme-modal">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h4 class="modal-title">Add a new agent</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form name="new-agent">
+                                            <div class="item">
+                                                <label class="theme-label">IP</label>
+                                                <input class="theme-input" type="text" name="ipaddress" value="">
+                                            </div>
+                                            <div class="item">
+                                                <label class="theme-label">Port</label>
+                                                <input class="theme-input" type="number" name="port" placeholder="default" value=""> </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <span class="add-node-loading hide">
+                                            <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i>
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                        <button type="button" class="btn btn-cancel" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-submit new-agent">Save</button>
+                                    </div>
                                 </div>
-                                <div class="modal-body">
-                                    <form name="new-agent">
-                                        <div class="item">
-                                            <label class="theme-label">IP</label>
-                                            <input class="theme-input" type="text" name="ipaddress" value="">
-                                        </div>
-                                        <div class="item">
-                                            <label class="theme-label">Port</label>
-                                            <input class="theme-input" type="number" name="port" placeholder="default" value=""> </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <span class="add-node-loading hide">
-                                <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i>
-                                <span class="sr-only">Loading...</span>
-                                    </span>
-                                    <button type="button" class="btn btn-cancel" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-submit new-agent">Save</button>
-                                </div>
+                                <!-- /.modal-content -->
                             </div>
-                            <!-- /.modal-content -->
+                            <!-- /.modal-dialog -->
                         </div>
-                        <!-- /.modal-dialog -->
+                        <!-- /.modal -->
+                        <p>节点列表/NodeList
+                            <button type="button" class="btn btn-submit right" data-toggle="modal" data-target="#myAddAgentModal">Add</button>
+                        </p>
+
+
                     </div>
-                    <!-- /.modal -->
-                    <p>节点列表/NodeList
-                        <button type="button" class="btn btn-submit right" data-toggle="modal" data-target="#myAddAgentModal">Add</button>
-                    </p>
-
-
+                    <div class="info-body">
+                        <table class="table ">
+                            <thead>
+                                <tr>
+                                    <th>IP Address</th>
+                                    <th>Status</th>
+                                    <th>Function</th>
+                                </tr>
+                            </thead>
+                            <tbody class="agent-list">
+                                {{with .iplist}} {{ range $key,$value := .}}
+                                <tr>
+                                    <td>{{$value}}</td>
+                                    <td>
+                                        <i class="fa fa-2x fa-check-circle-o" style="color:#009277;" aria-hidden="true"></i>
+                                    </td>
+                                    <td>
+                                        <button class="btn small-ping-button" data-item="{{$value}}">
+                                            <i class="fa fa-handshake-o" aria-hidden="true"></i> Ping</button>
+                                        <button class="btn small-delete-button" data-item="{{$value}}">
+                                            <i class="fa fa-times" aria-hidden="true"></i> Delete</button>
+                                    </td>
+                                </tr>
+                                {{ end }} {{end}}
+                            </tbody>
+                    </div>
                 </div>
-                <div class="info-body">
-                    <table class="table ">
-                        <thead>
-                            <tr>
-                                <th>IP Address</th>
-                                <th>Status</th>
-                                <th>Function</th>
-                            </tr>
-                        </thead>
-                        <tbody class="agent-list">
-                            {{with .iplist}} {{ range $key,$value := .}}
-                            <tr>
-                                <td>{{$value}}</td>
-                                <td><i class="fa fa-2x fa-check-circle-o" style="color:#009277;" aria-hidden="true"></i></td>
-                                <td>
-                                    <button class="btn small-ping-button" data-item="{{$value}}"><i class="fa fa-handshake-o" aria-hidden="true"></i> Ping</button>
-                                    <button class="btn small-delete-button" data-item="{{$value}}"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
-                                </td>
-                            </tr>
-                            {{ end }} {{end}}
-                        </tbody>
-                </div>
-            </div>
-            <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-            <script src="https://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-            <script src="/public/js/main.js"></script>
-</body>
+                <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+                    crossorigin="anonymous"></script>
+                <script src="https://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+                    crossorigin="anonymous"></script>
+                <script src="/public/js/main.js"></script>
+    </body>
 
 </html>
