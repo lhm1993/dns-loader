@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -32,8 +33,11 @@ func auth(f func(w http.ResponseWriter, req *http.Request)) func(w http.Response
 }
 
 func index(w http.ResponseWriter, req *http.Request) {
+	data := map[string]interface{}{
+		"iplist": nodeManager.IPList,
+	}
 	r := render.New(render.Options{})
-	r.HTML(w, http.StatusOK, "index", nil)
+	r.HTML(w, http.StatusOK, "index", data)
 }
 
 func addNode(w http.ResponseWriter, req *http.Request) {
@@ -47,7 +51,43 @@ func addNode(w http.ResponseWriter, req *http.Request) {
 	}
 	err = nodeManager.AddNode(ipinfo.IPAddress, ipinfo.Port)
 	if err != nil {
-		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": "add node fail"})
+		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": err.Error()})
+		return
+	}
+	r.JSON(w, http.StatusOK, map[string]string{"status": "success"})
+}
+
+func pingNode(w http.ResponseWriter, req *http.Request) {
+	r := render.New(render.Options{})
+	decoder := json.NewDecoder(req.Body)
+	var ipinfo IPWithPort
+	err := decoder.Decode(&ipinfo)
+	if err != nil {
+		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": err.Error()})
+		return
+	}
+	ip := fmt.Sprintf("%s:%d", ipinfo.IPAddress, ipinfo.Port)
+	err = nodeManager.callPing(ip)
+	if err != nil {
+		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": err.Error()})
+		return
+	}
+	r.JSON(w, http.StatusOK, map[string]string{"status": "success"})
+}
+
+func deleteNode(w http.ResponseWriter, req *http.Request) {
+	r := render.New(render.Options{})
+	decoder := json.NewDecoder(req.Body)
+	var ipinfo IPWithPort
+	err := decoder.Decode(&ipinfo)
+	if err != nil {
+		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": err.Error()})
+		return
+	}
+	pending := fmt.Sprintf("%s:%d", ipinfo.IPAddress, ipinfo.Port)
+	err = nodeManager.Remove(pending)
+	if err != nil {
+		r.JSON(w, http.StatusBadRequest, map[string]string{"status": "error", "message": err.Error()})
 		return
 	}
 	r.JSON(w, http.StatusOK, map[string]string{"status": "success"})
@@ -69,9 +109,21 @@ func startDNSTraffic(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		go dnsloader.GenTrafficFromConfig(&config)
+		go nodeManager.Call(Start, config)
 		r.JSON(w, http.StatusOK, map[string]string{"status": "success"})
 	}
 }
+
+func stopDNSTraffic(w http.ResponseWriter, req *http.Request) {
+	r := render.New(render.Options{})
+	if stopStatus := dnsloader.GloablGenerator.Stop(); true != stopStatus {
+		r.JSON(w, http.StatusInternalServerError, map[string]string{"status": "error", "message": "ServerFail"})
+		return
+	}
+	go nodeManager.Call(Kill, nil)
+	r.JSON(w, http.StatusOK, map[string]string{"status": "success"})
+}
+
 func login(config *dnsloader.Configuration) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		session, _ := store.Get(req, "dns-loader")
@@ -115,10 +167,12 @@ func NewServer(config *dnsloader.Configuration) {
 	r.HandleFunc("/logout", logout).Methods("POST", "GET")
 	r.HandleFunc("/login", login(config)).Methods("GET", "POST")
 	r.HandleFunc("/nodes", auth(addNode)).Methods("POST")
+	r.HandleFunc("/nodes", auth(deleteNode)).Methods("DELETE")
+	r.HandleFunc("/ping", auth(pingNode)).Methods("POST")
 	r.HandleFunc("/start", auth(startDNSTraffic)).Methods("POST")
+	r.HandleFunc("/stop", auth(stopDNSTraffic)).Methods("GET")
 	log.Println("http server route init success")
 	log.Printf("static file folder:%s\n", http.Dir("/web/assets"))
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public", http.FileServer(http.Dir("./web/assets"))))
-
 	http.ListenAndServe(config.HTTPServer, http.TimeoutHandler(r, time.Second*10, "timeout"))
 }

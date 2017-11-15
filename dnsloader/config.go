@@ -27,10 +27,10 @@ type Configuration struct {
 	Domain             string `json:"domain" valid:"dns"`
 	DomainRandomLength int    `json:"domain_random_length" valid:"-"`
 	QueryTypeFixed     bool   `json:"query_type_fixed" valid:"-"`
-	QueryType          string `json:"query_type" valid:"in(A|AAAA|SOA|TXT|MX|NS|CNAME),optional"`
+	QueryType          string `json:"query_type" valid:"-"`
 	Debug              bool   `json:"debug" valid:"-"`
 	HTTPServer         string `json:"web" valid:"ip,optional"`
-	RPCPort            int    `json:"rpc_port" valid:"-"`
+	AgentPort          int    `json:"agent_port" valid:"-"`
 
 	User       string `json:"-" valid:"-"`
 	Password   string `json:"-" valid:"-"`
@@ -50,7 +50,7 @@ func (config *Configuration) Valid() error {
 	if config.QPS < 0 ||
 		config.Duration < 0 ||
 		config.DomainRandomLength < 0 ||
-		config.RPCPort < 0 ||
+		config.AgentPort < 0 ||
 		config.Port < 0 {
 		return errors.New("number can't set to nagetive")
 	}
@@ -93,8 +93,8 @@ func (config *Configuration) LoadConfigurationFromIniFile(filename string) (err 
 	if secApp.HasKey("control_master") {
 		config.ControlMaster = secApp.Key("control_master").String()
 	}
-	if secApp.HasKey("rpc_port") {
-		config.RPCPort = secApp.Key("rpc_port").MustInt()
+	if secApp.HasKey("agent_port") {
+		config.AgentPort = secApp.Key("agent_port").MustInt()
 	}
 	if secApp.HasKey("http_server") {
 		config.HTTPServer = secApp.Key("http_server").String()

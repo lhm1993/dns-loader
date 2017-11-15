@@ -83,6 +83,7 @@
                             </div>
                         </div>
                         <button type="button" class="btn btn-submit config-submit">Start</button>
+                        <button type="button" class="btn btn-submit config-kill">Stop</button>
                     </form>
                 </div>
                 <!-- <div class="info-status">
@@ -136,6 +137,30 @@
                     <p>节点列表/NodeList
                         <button type="button" class="btn btn-submit right" data-toggle="modal" data-target="#myAddAgentModal">Add</button>
                     </p>
+
+
+                </div>
+                <div class="info-body">
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>Status</th>
+                                <th>Function</th>
+                            </tr>
+                        </thead>
+                        <tbody class="agent-list">
+                            {{with .iplist}} {{ range $key,$value := .}}
+                            <tr>
+                                <td>{{$value}}</td>
+                                <td><i class="fa fa-2x fa-check-circle-o" style="color:#009277;" aria-hidden="true"></i></td>
+                                <td>
+                                    <button class="btn small-ping-button" data-item="{{$value}}"><i class="fa fa-handshake-o" aria-hidden="true"></i> Ping</button>
+                                    <button class="btn small-delete-button" data-item="{{$value}}"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
+                                </td>
+                            </tr>
+                            {{ end }} {{end}}
+                        </tbody>
                 </div>
             </div>
             <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>

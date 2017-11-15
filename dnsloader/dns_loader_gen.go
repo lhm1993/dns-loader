@@ -10,6 +10,9 @@ import (
 	"go.uber.org/ratelimit"
 )
 
+//GloablGenerator define  global control object
+var GloablGenerator Generator
+
 type myDNSLoaderGenerator struct {
 	caller     Caller
 	timeout    time.Duration
@@ -195,5 +198,6 @@ func GenTrafficFromConfig(config *Configuration) {
 		log.Panicf("load generator initialization fail :%s", err)
 	}
 	log.Println("start load generator")
+	GloablGenerator = gen
 	gen.Start()
 }

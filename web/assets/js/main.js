@@ -82,6 +82,75 @@ $(document).ready(function() {
             contentType: "application/json"
         })
     })
+    $(".small-delete-button").click(function() {
+        var ipWithPort = $(this).attr("data-item")
+        var data = {
+            "ipaddress": ipWithPort.split(":")[0],
+            "port": parseInt(ipWithPort.split(":")[1])
+        }
+        $.ajax({
+            type: "DELETE",
+            url: "/nodes",
+            data: JSON.stringify(data),
+            success: function(data) {
+                toastr.info("delete success")
+                window.location.reload()
+            },
+            error: function(err) {
+                if (err && err.responseJSON && err.responseJSON.message) {
+                    toastr.error("Delete fail", err.responseJSON.message)
+                } else {
+                    toastr.error("Delete fail")
+                }
+            },
+            contentType: "application/json"
+        })
+    })
+
+    $(".small-ping-button").click(function() {
+        var ipWithPort = $(this).attr("data-item")
+        var data = {
+            "ipaddress": ipWithPort.split(":")[0],
+            "port": parseInt(ipWithPort.split(":")[1])
+        }
+        $.ajax({
+            type: "POST",
+            url: "/ping",
+            data: JSON.stringify(data),
+            success: function(data) {
+                toastr.success("ping success")
+            },
+            error: function(err) {
+                if (err && err.responseJSON && err.responseJSON.message) {
+                    toastr.error("ping fail", err.responseJSON.message)
+                } else {
+                    toastr.error("ping fail")
+                        // change the color of status to black
+                }
+            },
+            contentType: "application/json"
+        })
+    })
+
+
+    $('.config-kill').click(function() {
+        console.log("stop signal send to master server")
+        $.ajax({
+            type: "GET",
+            url: "/stop",
+            success: function(response) {
+                toastr.success("stop traffic success")
+            },
+            error: function(err) {
+                if (err && err.responseJSON && err.responseJSON.message) {
+                    toastr.error("Error", err.responseJSON.message)
+                } else {
+                    toastr.error("Error", "ServerFail")
+                }
+            },
+            contentType: "application/json"
+        })
+    })
 
     $('.new-agent').click(function() {
         var data = getFormData($("form[name='new-agent']"))
@@ -99,13 +168,19 @@ $(document).ready(function() {
             type: "POST",
             url: "/nodes",
             data: JSON.stringify(data),
-            success: function(data) {
+            success: function(response) {
                 $(".add-node-loading").addClass("hide")
-                console.log(data)
+                    // console.log(data)
+                    //     // Add to list 
+                window.location.reload()
             },
-            error: function() {
+            error: function(err) {
                 $(".add-node-loading").addClass("hide")
-                toastr.error("Add new node fail", "Request Fail")
+                if (err && err.responseJSON && err.responseJSON.message) {
+                    toastr.error("Add new node fail", err.responseJSON.message)
+                } else {
+                    toastr.error("Add new node fail", "ServerFail")
+                }
             },
             contentType: "application/json"
         })

@@ -12,6 +12,16 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
+// StringInSlice find if string type object a in a string list
+func StringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 // GetDetailInfo
 func GetDetailInfo(code ReturnCode) string {
 	var detail string

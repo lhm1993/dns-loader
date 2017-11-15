@@ -4,11 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	_ "net/http/pprof"
-	"net/rpc"
-	"net/rpc/jsonrpc"
 	"os"
 
 	"github.com/zhangmingkai4315/dns-loader/dnsloader"
@@ -101,23 +98,12 @@ func main() {
 	}
 
 	if *loaderType == "agent" {
-		if config.RPCPort == 0 || config.ControlMaster == "" {
-			usageAndExit("RPC port and master ip must given")
+		if config.AgentPort == 0 || config.ControlMaster == "" {
+			usageAndExit("agent port and master ip must given")
 		}
-		log.Printf("start RPC server listen on %d for master:%s connect\n", config.RPCPort, config.ControlMaster)
-		rpcService := web.NewRPCService()
-		rpc.Register(rpcService)
-		tcpAddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf(":%d", config.RPCPort))
-		checkError(err)
-		listener, err := net.ListenTCP("tcp", tcpAddr)
-		checkError(err)
-		for {
-			conn, err := listener.Accept()
-			if err != nil {
-				continue
-			}
-			jsonrpc.ServeConn(conn)
-		}
+		log.Printf("start agent server listen on %d for master:%s connect\n", config.AgentPort, config.ControlMaster)
+		web.NewAgentServer(config)
+		return
 	}
 
 }
